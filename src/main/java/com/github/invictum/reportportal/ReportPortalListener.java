@@ -6,12 +6,16 @@ import com.google.inject.Inject;
 import net.thucydides.core.model.DataTable;
 import net.thucydides.core.model.Story;
 import net.thucydides.core.model.TestOutcome;
+import net.thucydides.core.model.TestResult;
+import net.thucydides.core.screenshots.ScreenshotAndHtmlSource;
 import net.thucydides.core.steps.ExecutedStepDescription;
 import net.thucydides.core.steps.StepFailure;
 import net.thucydides.core.steps.StepListener;
 import net.thucydides.core.webdriver.ThucydidesWebDriverSupport;
 import org.openqa.selenium.logging.Logs;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 
 public class ReportPortalListener implements StepListener {
@@ -46,9 +50,20 @@ public class ReportPortalListener implements StepListener {
         // Not used by listener
     }
 
+    @Override
+    public void testStarted(String s, String s1, ZonedDateTime zonedDateTime) {
+        // Not used by listener
+    }
+
     public void testFinished(TestOutcome result) {
-        TestRecorder recorder = TestRecorder.forTest(result);
-        recorder.record(result);
+        // Not used by listener
+    }
+
+    @Override
+    public void testFinished(TestOutcome testOutcome, boolean b, ZonedDateTime zonedDateTime) {
+        // Not used by listener
+        TestRecorder recorder = TestRecorder.forTest(testOutcome);
+        recorder.record(testOutcome);
         logStorage.clean();
     }
 
@@ -66,6 +81,11 @@ public class ReportPortalListener implements StepListener {
 
     public void stepFailed(StepFailure failure) {
         harvestDriverLogs();
+    }
+
+    @Override
+    public void stepFailed(StepFailure stepFailure, List<ScreenshotAndHtmlSource> list) {
+        // Not used by listener
     }
 
     public void lastStepFailed(StepFailure failure) {
@@ -86,6 +106,11 @@ public class ReportPortalListener implements StepListener {
 
     public void stepFinished() {
         harvestDriverLogs();
+    }
+
+    @Override
+    public void stepFinished(List<ScreenshotAndHtmlSource> list) {
+        // Not used by listener
     }
 
     public void testFailed(TestOutcome testOutcome, Throwable cause) {
@@ -134,6 +159,16 @@ public class ReportPortalListener implements StepListener {
 
     public void testRunFinished() {
         // Not used by listener
+    }
+
+    @Override
+    public void takeScreenshots(List<ScreenshotAndHtmlSource> list) {
+        // Not used by listener
+    }
+
+    @Override
+    public void takeScreenshots(TestResult testResult, List<ScreenshotAndHtmlSource> list) {
+
     }
 
     private void harvestDriverLogs() {
