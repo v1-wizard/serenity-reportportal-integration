@@ -1,9 +1,9 @@
 package com.github.invictum.reportportal;
 
-import net.thucydides.core.annotations.Narrative;
-
 import java.util.Objects;
 import java.util.function.Function;
+
+import net.serenitybdd.annotations.Narrative;
 
 /**
  * Configuration entry point for integration.
@@ -95,4 +95,5 @@ public class ReportIntegrationConfig {
         String value = System.getProperty(MODULES_COUNT_KEY);
         return value == null ? 0 : Integer.parseInt(value);
     }
+
 }

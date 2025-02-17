@@ -2,9 +2,8 @@ package com.github.invictum.reportportal.log.unit;
 
 import com.epam.ta.reportportal.ws.model.log.SaveLogRQ;
 import com.github.invictum.reportportal.Utils;
-
-import net.thucydides.core.model.TestOutcome;
-import net.thucydides.core.model.TestStep;
+import net.thucydides.model.domain.TestOutcome;
+import net.thucydides.model.domain.TestStep;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -51,7 +50,7 @@ public class Error {
      */
     public static Function<TestOutcome, Collection<SaveLogRQ>> configuredTestError(Function<TestOutcome, String> errorFormatter) {
         return testOutcome -> {
-            if (!testOutcome.getFailingStep().isPresent() && testOutcome.getTestFailureCause() != null) {
+            if (testOutcome.getFailingStep().isEmpty() && testOutcome.getTestFailureCause() != null) {
                 SaveLogRQ log = new SaveLogRQ();
                 log.setMessage(errorFormatter.apply(testOutcome));
                 log.setLevel(Utils.logLevel(testOutcome.getResult()));

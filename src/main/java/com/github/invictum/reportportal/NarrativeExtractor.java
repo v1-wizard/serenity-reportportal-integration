@@ -1,11 +1,12 @@
 package com.github.invictum.reportportal;
 
-import net.thucydides.core.annotations.Narrative;
-import net.thucydides.core.model.TestOutcome;
-import net.thucydides.core.requirements.annotations.NarrativeFinder;
 
 import java.util.Optional;
 import java.util.function.Function;
+
+import net.serenitybdd.annotations.Narrative;
+import net.thucydides.model.domain.TestOutcome;
+import net.thucydides.model.requirements.annotations.NarrativeFinder;
 
 /**
  * Narrative extractor used to discover narrative for different types of tests

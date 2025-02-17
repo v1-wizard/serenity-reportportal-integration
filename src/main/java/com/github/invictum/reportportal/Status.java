@@ -1,9 +1,8 @@
 package com.github.invictum.reportportal;
-
-import net.thucydides.core.model.TestResult;
-
 import java.util.Arrays;
 import java.util.List;
+
+import net.thucydides.model.domain.TestResult;
 
 /**
  * Describes available items statuses.

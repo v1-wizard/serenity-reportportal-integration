@@ -1,9 +1,9 @@
 package com.github.invictum.reportportal.log.unit;
 
 import com.epam.ta.reportportal.ws.model.log.SaveLogRQ;
-import net.serenitybdd.core.rest.RestMethod;
-import net.serenitybdd.core.rest.RestQuery;
-import net.thucydides.core.model.TestStep;
+import net.serenitybdd.model.rest.RestMethod;
+import net.serenitybdd.model.rest.RestQuery;
+import net.thucydides.model.domain.TestStep;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,32 +17,34 @@ import java.util.Collection;
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class RestTest {
 
-    private static String MESSAGE = "## Request\n" +
-            "\n" +
-            "GET path\n" +
-            "\n" +
-            "***Headers***\n" +
-            "req-headers\n" +
-            "\n" +
-            "***Cookies***\n" +
-            "req-cookies\n" +
-            "\n" +
-            "***Body***\n" +
-            "```\n" +
-            "body\n" +
-            "```\n" +
-            "\n" +
-            "## Response\n" +
-            "\n" +
-            "***Code*** 200\n" +
-            "\n" +
-            "***Headers***\n" +
-            "res-headers\n" +
-            "\n" +
-            "***Body***\n" +
-            "```\n" +
-            "res-body\n" +
-            "```\n";
+    private static final String MESSAGE = """
+            ## Request
+            
+            GET path
+            
+            ***Headers***
+            req-headers
+            
+            ***Cookies***
+            req-cookies
+            
+            ***Body***
+            ```
+            body
+            ```
+            
+            ## Response
+            
+            ***Code*** 200
+            
+            ***Headers***
+            res-headers
+            
+            ***Body***
+            ```
+            res-body
+            ```
+            """;
 
     @Mock
     private TestStep stepMock;
@@ -70,4 +72,5 @@ public class RestTest {
         Collection<SaveLogRQ> logs = Rest.restQuery().apply(stepMock);
         Assert.assertEquals(MESSAGE, logs.iterator().next().getMessage());
     }
+
 }
