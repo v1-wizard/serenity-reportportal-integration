@@ -190,7 +190,12 @@ public class ReportPortalListener implements StepListener {
 
     @Override
     public void takeScreenshots(TestResult testResult, List<ScreenshotAndHtmlSource> list) {
+        // Not used by listener
+    }
 
+    @Override
+    public void recordScreenshot(String s, byte[] bytes) {
+        // Not used by listener
     }
 
     private void harvestDriverLogs() {

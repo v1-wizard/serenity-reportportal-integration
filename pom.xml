@@ -4,7 +4,7 @@
 
     <groupId>com.github.invictum</groupId>
     <artifactId>serenity-reportportal-integration</artifactId>
-    <version>2.4-wf</version>
+    <version>3.0-wf</version>
 
     <packaging>jar</packaging>
 
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-core</artifactId>
-            <version>4.2.16</version>
+            <version>5.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.epam.reportportal</groupId>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.epam.reportportal</groupId>
             <artifactId>commons-model</artifactId>
-            <version>5.3.0</version>
+            <version>5.7.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.3</version>
         </dependency>
 
         <dependency>

@@ -4,6 +4,7 @@ import com.epam.reportportal.listeners.ListenerParameters;
 import com.epam.reportportal.service.Launch;
 import com.epam.reportportal.service.ReportPortal;
 import com.epam.ta.reportportal.ws.model.FinishExecutionRQ;
+import com.epam.ta.reportportal.ws.model.launch.LaunchResource;
 import com.epam.ta.reportportal.ws.model.launch.MergeLaunchesRQ;
 import com.epam.ta.reportportal.ws.model.launch.StartLaunchRQ;
 import com.github.invictum.reportportal.FileStorage;
@@ -50,7 +51,8 @@ public class ReportLaunchProvider implements Provider<Launch> {
                 if (fileStorage.count() == MODULES_COUNT) {
                     LOG.debug("Launches merge is requested");
                     MergeLaunchesRQ merge = buildMergeLaunchesEvent(reportPortal.getParameters());
-                    reportPortal.getClient().mergeLaunches(merge).blockingGet();
+                    LaunchResource launchResource = reportPortal.getClient().mergeLaunches(merge).blockingGet();
+                    LOG.debug("Launches merge is completed. Merged launch ID: {}", launchResource.getLaunchId());
                 }
             }
             LOG.debug("Report Portal communication is disengaged");
@@ -80,4 +82,5 @@ public class ReportLaunchProvider implements Provider<Launch> {
         merge.setLaunches(fileStorage.loadAndClean());
         return merge;
     }
+
 }
