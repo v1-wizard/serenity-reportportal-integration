@@ -92,7 +92,7 @@ public class ReportPortalListener implements StepListener {
 
     @Override
     public void stepFailed(StepFailure failure, List<ScreenshotAndHtmlSource> screenshotList, boolean isInDataDrivenTest, ZonedDateTime timestamp) {
-
+        // Not used by listener
     }
 
     @Override

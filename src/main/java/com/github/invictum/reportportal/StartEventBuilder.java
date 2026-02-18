@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class StartEventBuilder {
 
     private static final int NAME_LIMIT = 1024;
-    private StartTestItemRQ startEvent = new StartTestItemRQ();
+    private final StartTestItemRQ startEvent = new StartTestItemRQ();
 
     public StartEventBuilder(ItemType type) {
         startEvent.setType(type.name());

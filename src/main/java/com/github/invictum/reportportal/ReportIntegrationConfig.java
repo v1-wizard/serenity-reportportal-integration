@@ -51,9 +51,8 @@ public class ReportIntegrationConfig {
     /**
      * Overrides class level narrative formatter with custom implementation
      */
-    public ReportIntegrationConfig useClassNarrativeFormatter(Function<Narrative, String> formatter) {
+    public void useClassNarrativeFormatter(Function<Narrative, String> formatter) {
         classNarrativeFormatter = Objects.requireNonNull(formatter, "Formatter must not be null");
-        return this;
     }
 
     /**
