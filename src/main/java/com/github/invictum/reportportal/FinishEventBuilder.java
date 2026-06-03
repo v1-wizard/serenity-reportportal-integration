@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class FinishEventBuilder {
 
-    private FinishTestItemRQ finishEvent = new FinishTestItemRQ();
+    private final FinishTestItemRQ finishEvent = new FinishTestItemRQ();
 
     public FinishEventBuilder withEndTime(ZonedDateTime start, long duration) {
         ZonedDateTime end = start.plus(duration, ChronoUnit.MILLIS);

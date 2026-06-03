@@ -3,8 +3,6 @@ package com.github.invictum.reportportal;
 import com.epam.ta.reportportal.ws.model.ParameterResource;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
 import com.epam.ta.reportportal.ws.model.attribute.ItemAttributesRQ;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import net.thucydides.model.domain.DataTable;
 import net.thucydides.model.domain.TestTag;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +70,9 @@ public class StartEventBuilder {
     }
 
     public StartTestItemRQ build() {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(startEvent.getName()), "Event name must not be null or empty");
+        if (StringUtils.isEmpty(startEvent.getName())) {
+            throw new IllegalArgumentException("Event name must not be null or empty");
+        }
         if (ReportIntegrationConfig.get().truncateNames) {
             String name = startEvent.getName();
             startEvent.setName(name.length() > NAME_LIMIT ? StringUtils.truncate(name, NAME_LIMIT - 3) + "..." : name);

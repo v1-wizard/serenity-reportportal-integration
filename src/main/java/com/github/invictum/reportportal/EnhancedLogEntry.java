@@ -1,5 +1,6 @@
 package com.github.invictum.reportportal;
 
+import org.jspecify.annotations.NonNull;
 import org.openqa.selenium.logging.LogEntry;
 
 import java.util.Map;
@@ -9,7 +10,7 @@ import java.util.Map;
  */
 public class EnhancedLogEntry extends LogEntry {
 
-    private String type;
+    private final String type;
 
     public EnhancedLogEntry(String type, LogEntry logEntry) {
         super(logEntry.getLevel(), logEntry.getTimestamp(), logEntry.getMessage());
@@ -21,7 +22,7 @@ public class EnhancedLogEntry extends LogEntry {
     }
 
     @Override
-    public Map<String, Object> toJson() {
+    public @NonNull Map<String, Object> toJson() {
         Map<String, Object> json = super.toJson();
         json.put("type", type);
         return json;

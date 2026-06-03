@@ -4,6 +4,7 @@ import com.epam.reportportal.listeners.ListenerParameters;
 import com.epam.reportportal.service.Launch;
 import com.epam.reportportal.service.ReportPortal;
 import com.epam.ta.reportportal.ws.model.FinishExecutionRQ;
+import com.epam.ta.reportportal.ws.model.attribute.ItemAttributeResource;
 import com.epam.ta.reportportal.ws.model.launch.LaunchResource;
 import com.epam.ta.reportportal.ws.model.launch.MergeLaunchesRQ;
 import com.epam.ta.reportportal.ws.model.launch.StartLaunchRQ;
@@ -75,7 +76,7 @@ public class ReportLaunchProvider implements Provider<Launch> {
     private MergeLaunchesRQ buildMergeLaunchesEvent(ListenerParameters parameters) {
         MergeLaunchesRQ merge = new MergeLaunchesRQ();
         merge.setName(parameters.getLaunchName());
-        merge.setAttributes(new HashSet<>(parameters.getAttributes()));
+        merge.setAttributes(new HashSet<ItemAttributeResource>(parameters.getAttributes()));
         merge.setExtendSuitesDescription(true);
         merge.setMergeStrategyType("DEEP");
         merge.setDescription(parameters.getDescription() == null ? StringUtils.EMPTY : parameters.getDescription());

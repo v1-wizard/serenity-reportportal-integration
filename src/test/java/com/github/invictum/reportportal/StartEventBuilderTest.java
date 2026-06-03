@@ -102,10 +102,10 @@ public class StartEventBuilderTest {
                 .withName("name")
                 .withParameters(rowMock)
                 .build();
-        ParameterResource expected = new ParameterResource();
-        expected.setKey("one");
-        expected.setValue("two");
-        Assert.assertEquals(Collections.singletonList(expected), event.getParameters());
+        Assert.assertEquals(1, event.getParameters().size());
+        ParameterResource actual = event.getParameters().get(0);
+        Assert.assertEquals("one", actual.getKey());
+        Assert.assertEquals("two", actual.getValue());
     }
 
     @Test

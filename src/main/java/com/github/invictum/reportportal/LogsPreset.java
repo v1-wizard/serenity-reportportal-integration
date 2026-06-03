@@ -3,10 +3,10 @@ package com.github.invictum.reportportal;
 import com.epam.ta.reportportal.ws.model.log.SaveLogRQ;
 import com.github.invictum.reportportal.log.unit.*;
 import com.github.invictum.reportportal.log.unit.Error;
-import com.google.common.base.Preconditions;
 import net.thucydides.model.domain.TestStep;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -62,7 +62,7 @@ public enum LogsPreset {
         @Override
         @SafeVarargs
         final public LogsPreset register(Function<TestStep, Collection<SaveLogRQ>>... units) {
-            Preconditions.checkArgument(units != null, "Units list must not be null");
+            Objects.requireNonNull(units, "Units list must not be null");
             this.units = units;
             return this;
         }
