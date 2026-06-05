@@ -15,12 +15,34 @@ public class ReportIntegrationConfig {
     public static final String MODULES_COUNT_KEY = "serenity.rp.modules.count";
     public static final String FAILSAFE_RERUN_KEY = "failsafe.rerunFailingTestsCount";
     public static final String SUREFIRE_RERUN_KEY = "surefire.rerunFailingTestsCount";
+
+    /**
+     * Report Portal defect type locator assigned to compromised tests. When unset no issue is
+     * attached. The built-in "To Investigate" type has the locator {@code ti001}.
+     */
+    public static final String COMPROMISED_DEFECT_LOCATOR_KEY = "serenity.rp.compromised.locator";
+
+    /**
+     * Report Portal defect type locator assigned to compromised tests whose failure message
+     * references Jira keys. Project specific (e.g. a custom "Blocked by Jira" subtype such as
+     * {@code ab_vbem6dawej3n}); when unset the {@link #COMPROMISED_DEFECT_LOCATOR_KEY} value is used.
+     */
+    public static final String COMPROMISED_JIRA_DEFECT_LOCATOR_KEY = "serenity.rp.compromised.jira.locator";
+    /**
+     * Comment prefix used when a compromised test is tagged with the Jira defect type. The detected
+     * Jira keys are appended to it.
+     */
+    public static final String COMPROMISED_JIRA_COMMENT_KEY = "serenity.rp.compromised.jira.comment";
+
     private static volatile ReportIntegrationConfig instance;
 
     private LogsPreset preset = LogsPreset.DEFAULT;
     private Function<Narrative, String> classNarrativeFormatter = n -> String.join("\n", n.text());
     boolean harvestSeleniumLogs = false;
     boolean truncateNames = false;
+    private String compromisedDefectLocator = System.getProperty(COMPROMISED_DEFECT_LOCATOR_KEY);
+    private String compromisedJiraDefectLocator = System.getProperty(COMPROMISED_JIRA_DEFECT_LOCATOR_KEY);
+    private String compromisedJiraComment = System.getProperty(COMPROMISED_JIRA_COMMENT_KEY, "Blocked by Jira");
 
     /**
      * Access to shared configuration instance
@@ -93,6 +115,45 @@ public class ReportIntegrationConfig {
     public int modulesQuantity() {
         String value = System.getProperty(MODULES_COUNT_KEY);
         return value == null ? 0 : Integer.parseInt(value);
+    }
+
+    /**
+     * Defines the Report Portal defect type locator assigned to compromised tests.
+     * Defect type locators are project specific; leaving it unset keeps compromised tests free of
+     * any issue. See {@link #COMPROMISED_DEFECT_LOCATOR_KEY}.
+     */
+    public ReportIntegrationConfig compromisedDefectLocator(String locator) {
+        compromisedDefectLocator = locator;
+        return this;
+    }
+
+    public String compromisedDefectLocator() {
+        return compromisedDefectLocator;
+    }
+
+    /**
+     * Defines the Report Portal defect type locator used for compromised tests that reference Jira
+     * keys in their failure message. See {@link #COMPROMISED_JIRA_DEFECT_LOCATOR_KEY}.
+     */
+    public ReportIntegrationConfig compromisedJiraDefectLocator(String locator) {
+        compromisedJiraDefectLocator = locator;
+        return this;
+    }
+
+    public String compromisedJiraDefectLocator() {
+        return compromisedJiraDefectLocator;
+    }
+
+    /**
+     * Overrides the comment prefix used when a compromised test is tagged with the Jira defect type.
+     */
+    public ReportIntegrationConfig compromisedJiraComment(String comment) {
+        compromisedJiraComment = comment;
+        return this;
+    }
+
+    public String compromisedJiraComment() {
+        return compromisedJiraComment;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.github.invictum.reportportal;
 
 import com.epam.ta.reportportal.ws.model.FinishTestItemRQ;
+import com.epam.ta.reportportal.ws.model.issue.Issue;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,6 +23,17 @@ public class FinishEventBuilder {
 
     public FinishEventBuilder withStatus(Status status) {
         finishEvent.setStatus(status.toString());
+        return this;
+    }
+
+    /**
+     * Attaches a Report Portal {@link Issue} (defect type + comment) to the finish event.
+     * A {@code null} issue is ignored, leaving the item without a defect.
+     */
+    public FinishEventBuilder withIssue(Issue issue) {
+        if (issue != null) {
+            finishEvent.setIssue(issue);
+        }
         return this;
     }
 
