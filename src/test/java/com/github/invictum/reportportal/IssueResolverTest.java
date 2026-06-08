@@ -78,10 +78,11 @@ public class IssueResolverTest {
     }
 
     @Test
+    @Test
     public void extractJiraKeysDedupesPreservingOrder() {
         Assert.assertEquals(
-                new ArrayList<>(IssueResolver.extractJiraKeys("WF-200, WF-100, WF-200")).toString(),
-                "[WF-200, WF-100]");
+                java.util.Arrays.asList("WF-200", "WF-100"),
+                new ArrayList<>(IssueResolver.extractJiraKeys("WF-200, WF-100, WF-200")));
     }
 
     @Test
