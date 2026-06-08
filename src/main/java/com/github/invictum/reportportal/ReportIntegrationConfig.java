@@ -148,7 +148,7 @@ public class ReportIntegrationConfig {
      * Overrides the comment prefix used when a compromised test is tagged with the Jira defect type.
      */
     public ReportIntegrationConfig compromisedJiraComment(String comment) {
-        compromisedJiraComment = comment;
+        compromisedJiraComment = Objects.requireNonNull(comment, "Comment must not be null");
         return this;
     }
 
