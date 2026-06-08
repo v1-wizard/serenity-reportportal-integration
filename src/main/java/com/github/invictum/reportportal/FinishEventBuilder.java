@@ -28,12 +28,10 @@ public class FinishEventBuilder {
 
     /**
      * Attaches a Report Portal {@link Issue} (defect type + comment) to the finish event.
-     * A {@code null} issue is ignored, leaving the item without a defect.
+     * Pass {@code null} to clear any previously set issue.
      */
     public FinishEventBuilder withIssue(Issue issue) {
-        if (issue != null) {
-            finishEvent.setIssue(issue);
-        }
+        finishEvent.setIssue(issue);
         return this;
     }
 
