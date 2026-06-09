@@ -4,7 +4,7 @@
 
     <groupId>com.github.invictum</groupId>
     <artifactId>serenity-reportportal-integration</artifactId>
-    <version>3.3-wf</version>
+    <version>3.6-wf</version>
 
     <packaging>jar</packaging>
 

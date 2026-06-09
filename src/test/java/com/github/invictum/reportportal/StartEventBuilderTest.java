@@ -56,6 +56,24 @@ public class StartEventBuilderTest {
     }
 
     @Test
+    public void stripsTrailingEmptyParenthesesTest() {
+        StartTestItemRQ event = new StartEventBuilder(ItemType.TEST)
+                .withStartTime(ZonedDateTime.now())
+                .withName("testWithoutLoginToMesosUi()")
+                .build();
+        Assert.assertEquals("testWithoutLoginToMesosUi", event.getName());
+    }
+
+    @Test
+    public void keepsParenthesesWithContentTest() {
+        StartTestItemRQ event = new StartEventBuilder(ItemType.TEST)
+                .withStartTime(ZonedDateTime.now())
+                .withName("scenario with data (row 1)")
+                .build();
+        Assert.assertEquals("scenario with data (row 1)", event.getName());
+    }
+
+    @Test
     public void withTruncatedNameTest() {
         ReportIntegrationConfig.get().truncateNames(true);
         String name = IntStream.range(0, 1024).mapToObj(i -> "0").collect(Collectors.joining()) + "extra";

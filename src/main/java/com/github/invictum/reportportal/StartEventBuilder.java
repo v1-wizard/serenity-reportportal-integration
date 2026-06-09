@@ -32,8 +32,17 @@ public class StartEventBuilder {
     }
 
     public StartEventBuilder withName(String name) {
-        startEvent.setName(name);
+        startEvent.setName(stripEmptyParentheses(name));
         return this;
+    }
+
+    /**
+     * Removes the trailing empty parentheses that JUnit appends to method based test names
+     * (e.g. {@code testWithoutLoginToMesosUi()}), so Report Portal shows a cleaner name.
+     * Names that carry content inside the parentheses (e.g. {@code foo(param)}) are left intact.
+     */
+    private static String stripEmptyParentheses(String name) {
+        return name != null && name.endsWith("()") ? name.substring(0, name.length() - 2) : name;
     }
 
     public StartEventBuilder withDescription(String description) {

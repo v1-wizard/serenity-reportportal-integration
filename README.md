@@ -278,6 +278,32 @@ Section includes minor settings that available to configure and describes their 
 Selenium logs harvesting |`ReportIntegrationConfig.get().harvestSeleniumLogs(true)` | Special option that works in conjunction with `Selenium.filteredLogs(...)` unit and must be enabled as well in order it to works. By default it is disabled.
 Truncate names           |`ReportIntegrationConfig.get().truncateNames(true)`       | Allows to hide RP server errors that related to entities with long names (more that 1024 symbols) creation. It is not recommended to use it. By default it is disabled.
 
+#### Compromised tests
+
+Serenity `COMPROMISED` tests are reported with Report Portal status `SKIPPED`. Optionally a Report Portal
+[issue](https://reportportal.io/docs/dashboards-and-widgets/IssueTypes) (defect type + comment) can be attached to those items
+directly on the finish-item request, so no post-run REST reconciliation is needed.
+
+Tagging is **disabled by default** — no issue is attached unless a defect type locator is configured. Defect type locators are
+**project specific**: the built-in *To Investigate* type has the locator `ti001`, while custom subtypes have generated locators
+(e.g. `ab_vbem6dawej3n`) that you must copy from your own Report Portal project settings. Re-using a locator from another project
+will silently produce items without a defect.
+
+When a compromised test's failure message references Jira keys (`PROJECT-123` style), they are collected into the issue comment.
+If a dedicated Jira defect locator is configured it is used for those tests, otherwise the default locator applies.
+
+ Setting                 | Property / API | Description
+-------------------------|----------------|----------------
+Default defect locator   | `-Dserenity.rp.compromised.locator=ti001` <br> `ReportIntegrationConfig.get().compromisedDefectLocator("ti001")` | Defect type locator assigned to compromised tests. Unset (default) means no issue is attached.
+Jira defect locator      | `-Dserenity.rp.compromised.jira.locator=ab_vbem6dawej3n` <br> `ReportIntegrationConfig.get().compromisedJiraDefectLocator("ab_vbem6dawej3n")` | Defect type locator used when the failure message references Jira keys. Falls back to the default locator when unset.
+Jira comment prefix      | `-Dserenity.rp.compromised.jira.comment=Blocked by Jira` <br> `ReportIntegrationConfig.get().compromisedJiraComment("Blocked by Jira")` | Comment prefix for Jira-tagged items; the detected keys are appended. Defaults to `Blocked by Jira`.
+
+> **Notice**
+>
+> Configuration must be set before the first test runs (see [Integration configuration](#integration-configuration)). Attaching a
+> defect to a skipped item only renders in Report Portal when the project's *Mark skipped tests as 'To Investigate'* (skippedIssue)
+> setting is enabled.
+
 ## Data mapping
 
 Serenity framework and Report Portal facility have a different entities structure. This section explains how data relates to each other.
