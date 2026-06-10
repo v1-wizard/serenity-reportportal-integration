@@ -41,11 +41,11 @@ public class BddDataDriven extends TestRecorder {
         // Steps
         proceedSteps(testId, Arrays.asList(test));
         // Stop test
-        FinishTestItemRQ finishScenario = new FinishEventBuilder()
+        FinishEventBuilder finishScenarioBuilder = new FinishEventBuilder()
                 .withStatus(Status.mapTo(test.getResult()))
-                .withEndTime(test.getStartTime(), test.getDuration())
-                .build();
-        launch.finishTestItem(testId, finishScenario);
+                .withEndTime(test.getStartTime(), test.getDuration());
+        IssueResolver.forCompromised(out).ifPresent(finishScenarioBuilder::withIssue);
+        launch.finishTestItem(testId, finishScenarioBuilder.build());
         // Finish suite
         FinishTestItemRQ finishStory = new FinishEventBuilder()
                 .withStatus(Status.PASSED)

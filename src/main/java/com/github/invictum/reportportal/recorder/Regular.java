@@ -52,11 +52,11 @@ public class Regular extends TestRecorder {
         // failed assertions in test itself
         recordNonStepFailure(out);
         // Stop test
-        FinishTestItemRQ finishTest = new FinishEventBuilder()
+        FinishEventBuilder finishTestBuilder = new FinishEventBuilder()
                 .withStatus(Status.mapTo(out.getResult()))
-                .withEndTime(out.getStartTime(), out.getDuration())
-                .build();
-        launch.finishTestItem(testId, finishTest);
+                .withEndTime(out.getStartTime(), out.getDuration());
+        IssueResolver.forCompromised(out).ifPresent(finishTestBuilder::withIssue);
+        launch.finishTestItem(testId, finishTestBuilder.build());
         // Finish suite
         FinishTestItemRQ finishSuite = new FinishEventBuilder()
                 .withStatus(Status.PASSED)

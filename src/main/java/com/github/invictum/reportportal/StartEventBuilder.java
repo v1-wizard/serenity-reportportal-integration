@@ -3,8 +3,6 @@ package com.github.invictum.reportportal;
 import com.epam.ta.reportportal.ws.model.ParameterResource;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
 import com.epam.ta.reportportal.ws.model.attribute.ItemAttributesRQ;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import net.thucydides.model.domain.DataTable;
 import net.thucydides.model.domain.TestTag;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +20,7 @@ import java.util.stream.Collectors;
 public class StartEventBuilder {
 
     private static final int NAME_LIMIT = 1024;
-    private StartTestItemRQ startEvent = new StartTestItemRQ();
+    private final StartTestItemRQ startEvent = new StartTestItemRQ();
 
     public StartEventBuilder(ItemType type) {
         startEvent.setType(type.name());
@@ -34,8 +32,17 @@ public class StartEventBuilder {
     }
 
     public StartEventBuilder withName(String name) {
-        startEvent.setName(name);
+        startEvent.setName(stripEmptyParentheses(name));
         return this;
+    }
+
+    /**
+     * Removes the trailing empty parentheses that JUnit appends to method based test names
+     * (e.g. {@code testWithoutLoginToMesosUi()}), so Report Portal shows a cleaner name.
+     * Names that carry content inside the parentheses (e.g. {@code foo(param)}) are left intact.
+     */
+    private static String stripEmptyParentheses(String name) {
+        return name != null && name.endsWith("()") ? name.substring(0, name.length() - 2) : name;
     }
 
     public StartEventBuilder withDescription(String description) {
@@ -72,7 +79,9 @@ public class StartEventBuilder {
     }
 
     public StartTestItemRQ build() {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(startEvent.getName()), "Event name must not be null or empty");
+        if (StringUtils.isEmpty(startEvent.getName())) {
+            throw new IllegalArgumentException("Event name must not be null or empty");
+        }
         if (ReportIntegrationConfig.get().truncateNames) {
             String name = startEvent.getName();
             startEvent.setName(name.length() > NAME_LIMIT ? StringUtils.truncate(name, NAME_LIMIT - 3) + "..." : name);

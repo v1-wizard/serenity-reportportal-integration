@@ -1,6 +1,7 @@
 package com.github.invictum.reportportal;
 
 import com.epam.ta.reportportal.ws.model.FinishTestItemRQ;
+import com.epam.ta.reportportal.ws.model.issue.Issue;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,5 +42,27 @@ public class FinishEventBuilderTest {
     @Test(expected = NullPointerException.class)
     public void withNullEndDateTest() {
         new FinishEventBuilder().withStatus(Status.PASSED).build();
+    }
+
+    @Test
+    public void withIssueTest() {
+        Issue issue = new Issue();
+        issue.setIssueType("ti001");
+        FinishTestItemRQ event = new FinishEventBuilder()
+                .withStatus(Status.SKIPPED)
+                .withEndTime(ZonedDateTime.now(), 5)
+                .withIssue(issue)
+                .build();
+        Assert.assertSame(issue, event.getIssue());
+    }
+
+    @Test
+    public void withNullIssueTest() {
+        FinishTestItemRQ event = new FinishEventBuilder()
+                .withStatus(Status.SKIPPED)
+                .withEndTime(ZonedDateTime.now(), 5)
+                .withIssue(null)
+                .build();
+        Assert.assertNull(event.getIssue());
     }
 }

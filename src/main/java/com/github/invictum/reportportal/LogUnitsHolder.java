@@ -9,10 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Holds all registered log units represented as {@link Function} that is able to produce a {@link Collection} of
@@ -27,7 +26,7 @@ public class LogUnitsHolder {
 
     @SafeVarargs
     public final void register(Function<TestStep, Collection<SaveLogRQ>>... units) {
-        checkArgument(units != null, "Passed units must not be null");
+        Objects.requireNonNull(units, "Passed units must not be null");
         if (units.length == 0) {
             LOG.warn("Empty list of log units is passed. No logs will be emitted to Report Portal");
         }

@@ -1,6 +1,7 @@
 package com.github.invictum.reportportal;
 
 import com.epam.ta.reportportal.ws.model.FinishTestItemRQ;
+import com.epam.ta.reportportal.ws.model.issue.Issue;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -12,7 +13,7 @@ import java.util.Objects;
  */
 public class FinishEventBuilder {
 
-    private FinishTestItemRQ finishEvent = new FinishTestItemRQ();
+    private final FinishTestItemRQ finishEvent = new FinishTestItemRQ();
 
     public FinishEventBuilder withEndTime(ZonedDateTime start, long duration) {
         ZonedDateTime end = start.plus(duration, ChronoUnit.MILLIS);
@@ -22,6 +23,15 @@ public class FinishEventBuilder {
 
     public FinishEventBuilder withStatus(Status status) {
         finishEvent.setStatus(status.toString());
+        return this;
+    }
+
+    /**
+     * Attaches a Report Portal {@link Issue} (defect type + comment) to the finish event.
+     * Pass {@code null} to clear any previously set issue.
+     */
+    public FinishEventBuilder withIssue(Issue issue) {
+        finishEvent.setIssue(issue);
         return this;
     }
 

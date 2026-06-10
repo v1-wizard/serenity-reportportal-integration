@@ -23,7 +23,7 @@ public class FileStorage {
      */
     private static final Predicate<Path> VALID = path -> path.getFileName().toString().matches("^\\d+$");
 
-    private Path root;
+    private final Path root;
 
     /**
      * Inits storage in specific location
@@ -36,7 +36,7 @@ public class FileStorage {
         try {
             Files.createDirectories(this.root);
         } catch (IOException e) {
-            LOG.warn("Path at {} is not writable. Merge may fail", root);
+            LOG.warn("Path at {} is not writable. Couldn't create directory", root);
         }
     }
 
@@ -50,7 +50,7 @@ public class FileStorage {
         try {
             Files.createFile(path);
         } catch (IOException e) {
-            LOG.warn("Path at {} is not writable. Merge may fail", root);
+            LOG.warn("Path at {} is not writable. Couldn't create file", root);
         }
     }
 
@@ -58,8 +58,8 @@ public class FileStorage {
      * Checks the count of launch files inside storage
      */
     public long count() {
-        try {
-            return Files.list(root).filter(VALID).count();
+        try (var stream = Files.list(root)) {
+            return stream.filter(VALID).count();
         } catch (IOException e) {
             LOG.warn("Path at {} is not readable. Merge may fail", root);
             return 0;
@@ -72,10 +72,12 @@ public class FileStorage {
     public Set<Long> loadAndClean() {
         Set<Long> ids = new HashSet<>();
         try {
-            Files.list(root).filter(VALID).forEach(path -> {
-                ids.add(Long.parseLong(path.getFileName().toString()));
-                secureRemove(path);
-            });
+            try (var stream = Files.list(root)) {
+                stream.filter(VALID).forEach(path -> {
+                    ids.add(Long.parseLong(path.getFileName().toString()));
+                    secureRemove(path);
+                });
+            }
             Files.delete(root);
         } catch (IOException e) {
             LOG.warn("Path at {} is not writable. Merge mechanism may fail", root);
