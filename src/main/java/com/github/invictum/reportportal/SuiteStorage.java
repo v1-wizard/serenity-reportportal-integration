@@ -1,8 +1,9 @@
 package com.github.invictum.reportportal;
 
 import io.reactivex.Maybe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +13,8 @@ import java.util.function.Supplier;
  * Abstraction used to control active suites lifecycle
  */
 public class SuiteStorage {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SuiteStorage.class);
 
     private final ConcurrentHashMap<String, SuiteMetadata> suites = new ConcurrentHashMap<>();
 
@@ -46,15 +49,37 @@ public class SuiteStorage {
     }
 
     /**
-     * Finishes all the active suite that belongs to current thread
+     * Finishes all active suites without pending retry markers.
      * Executes finishers registered by suiteFinisher method
      */
     public void finalizeActive() {
-        suites.forEachKey(Runtime.getRuntime().availableProcessors(), id -> {
-            SuiteMetadata meta = suites.get(id);
-            if (meta.failedTests.isEmpty()) {
-                suites.remove(id);
-                meta.finisher.run();
+        finalizeSuites(false);
+    }
+
+    /**
+     * Finishes all suites that are still open, even if retry markers remain.
+     * Used during JVM shutdown, when no further retry callback can arrive in this fork.
+     */
+    public void finalizeRemaining() {
+        finalizeSuites(true);
+    }
+
+    private void finalizeSuites(boolean force) {
+        suites.forEach((id, meta) -> {
+            int pendingRetries = meta.failedTests.size();
+            if (!force && pendingRetries > 0) {
+                return;
+            }
+            if (suites.remove(id, meta)) {
+                Runnable finisher = meta.finisher;
+                if (finisher == null) {
+                    LOG.warn("Suite '{}' cannot be finalized because no finisher was registered", id);
+                    return;
+                }
+                if (force && pendingRetries > 0) {
+                    LOG.debug("Finalizing suite '{}' with {} unresolved retry marker(s)", id, pendingRetries);
+                }
+                finisher.run();
             }
         });
     }
@@ -112,6 +137,6 @@ public class SuiteStorage {
     private static class SuiteMetadata {
         private Maybe<String> id;
         private Runnable finisher;
-        private final Map<String, AtomicInteger> failedTests = new HashMap<>();
+        private final Map<String, AtomicInteger> failedTests = new ConcurrentHashMap<>();
     }
 }

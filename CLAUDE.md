@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Single-module Maven library that integrates [Serenity BDD](https://serenity-bdd.github.io/) with [Report Portal](https://reportportal.io). Built as a `jar` that downstream test projects depend on — it has no runnable entry point. Java 21, `groupId: com.github.invictum`, `version: 3.6-wf` (the `-wf` suffix marks this as a fork divergent from upstream Invictum releases).
+Single-module Maven library that integrates [Serenity BDD](https://serenity-bdd.github.io/) with [Report Portal](https://reportportal.io). Built as a `jar` that downstream test projects depend on — it has no runnable entry point. Java 21, `groupId: com.github.invictum`, `version: 3.7-wf` (the `-wf` suffix marks this as a fork divergent from upstream Invictum releases).
 
 ## Build & test
 

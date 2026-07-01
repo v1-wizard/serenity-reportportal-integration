@@ -10,6 +10,8 @@ import com.epam.ta.reportportal.ws.model.launch.MergeLaunchesRQ;
 import com.epam.ta.reportportal.ws.model.launch.StartLaunchRQ;
 import com.github.invictum.reportportal.FileStorage;
 import com.github.invictum.reportportal.ReportIntegrationConfig;
+import com.github.invictum.reportportal.SuiteStorage;
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import io.reactivex.Maybe;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,9 @@ public class ReportLaunchProvider implements Provider<Launch> {
     private static final int MODULES_COUNT = ReportIntegrationConfig.get().modulesQuantity();
     private FileStorage fileStorage;
 
+    @Inject
+    private SuiteStorage suiteStorage;
+
     @Override
     public Launch get() {
         ReportPortal reportPortal = ReportPortal.builder().build();
@@ -35,30 +40,51 @@ public class ReportLaunchProvider implements Provider<Launch> {
         //We should run launch immediately to avoid problem with rp.client.join functionality
         Maybe<String> launchId = launch.start();
         // Register shutdown hook. RP connection will be closed before VM shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            // Finish launch
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown(reportPortal, launch, launchId),
+                "report-portal-shutdown"));
+        return launch;
+    }
+
+    private void shutdown(ReportPortal reportPortal, Launch launch, Maybe<String> launchId) {
+        try {
+            suiteStorage.finalizeRemaining();
+        } catch (Exception e) {
+            LOG.warn("Failed to finalize active Report Portal suites before launch shutdown", e);
+        }
+
+        try {
             FinishExecutionRQ finishExecutionRQ = new FinishExecutionRQ();
             finishExecutionRQ.setEndTime(Calendar.getInstance().getTime());
             launch.finish(finishExecutionRQ);
-            // Activate merge if parameters are passed
-            if (DIR != null && MODULES_COUNT > 1) {
-                //Record launch ID and UUID.
-                String uuid = launchId.blockingGet();
-                Long id = reportPortal.getClient().getLaunchByUuid(uuid).blockingGet().getLaunchId();
-                //Init fileStorage
-                fileStorage = new FileStorage(DIR);
-                fileStorage.touch(id);
-                // Perform merge
-                if (fileStorage.count() == MODULES_COUNT) {
-                    LOG.debug("Launches merge is requested");
-                    MergeLaunchesRQ merge = buildMergeLaunchesEvent(reportPortal.getParameters());
-                    LaunchResource launchResource = reportPortal.getClient().mergeLaunches(merge).blockingGet();
-                    LOG.debug("Launches merge is completed. Merged launch ID: {}", launchResource.getLaunchId());
-                }
-            }
-            LOG.debug("Report Portal communication is disengaged");
-        }));
-        return launch;
+        } catch (Exception e) {
+            LOG.warn("Failed to finish Report Portal launch during JVM shutdown", e);
+        }
+
+        try {
+            mergeLaunchesIfNeeded(reportPortal, launchId);
+        } catch (Exception e) {
+            LOG.warn("Failed to merge Report Portal launches during JVM shutdown", e);
+        }
+        LOG.debug("Report Portal communication is disengaged");
+    }
+
+    private void mergeLaunchesIfNeeded(ReportPortal reportPortal, Maybe<String> launchId) {
+        if (DIR == null || MODULES_COUNT <= 1) {
+            return;
+        }
+        //Record launch ID and UUID.
+        String uuid = launchId.blockingGet();
+        Long id = reportPortal.getClient().getLaunchByUuid(uuid).blockingGet().getLaunchId();
+        //Init fileStorage
+        fileStorage = new FileStorage(DIR);
+        fileStorage.touch(id);
+        // Perform merge
+        if (fileStorage.count() == MODULES_COUNT) {
+            LOG.debug("Launches merge is requested");
+            MergeLaunchesRQ merge = buildMergeLaunchesEvent(reportPortal.getParameters());
+            LaunchResource launchResource = reportPortal.getClient().mergeLaunches(merge).blockingGet();
+            LOG.debug("Launches merge is completed. Merged launch ID: {}", launchResource.getLaunchId());
+        }
     }
 
     private StartLaunchRQ buildStartLaunchEvent(ListenerParameters parameters) {
